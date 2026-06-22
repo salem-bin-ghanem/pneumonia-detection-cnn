@@ -29,6 +29,7 @@ DEST_DIR = "data"              # The folder where the split data will go
 TRAIN_SPLIT = 0.70
 VAL_SPLIT = 0.15
 # Test split is the remaining 0.15
+random.seed(42)
 
 def create_directory_structure():
     """
@@ -77,8 +78,6 @@ def split_and_copy_data(category):
     # 1. Gather all images and shuffle them randomly
     images = gather_all_images(category)
 
-    # Set a fixed seed for reproducibility before shuffling
-    random.seed(42)
     random.shuffle(images)
     
     total_images = len(images)
