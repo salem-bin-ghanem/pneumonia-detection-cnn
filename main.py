@@ -21,9 +21,9 @@ import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, BatchNormalization
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from sklearn.metrics import confusion_matrix, classification_report, ConfusionMatrixDisplay
-
+from sklearn.utils.class_weight import compute_class_weight
 
 # Configuration
 
@@ -155,6 +155,8 @@ def train_model(model, train_generator, val_generator):
 
     Early stopping is used to stop training when validation loss stops improving.
     ModelCheckpoint saves the best model during training.
+    ReduceLROnPlateau is used to reduce learning rate when validation loss plateaus.
+    Dynamic class weights are added to automatically balance majority/minority loss penalties.
 
     Input:
         model: Compiled Keras CNN model.
@@ -176,14 +178,31 @@ def train_model(model, train_generator, val_generator):
             monitor="val_accuracy",
             save_best_only=True,
             verbose=1
+        ),
+        ReduceLROnPlateau(
+            monitor="val_loss",
+            factor=0.5,
+            patience=2,
+            min_lr=1e-6,
+            verbose=1
         )
     ]
+
+    train_classes = train_generator.classes
+    class_weights = compute_class_weight(
+        class_weight="balanced",
+        classes=np.unique(train_classes),
+        y=train_classes
+    )
+    class_weight_dict = dict(enumerate(class_weights))
+    print(f"\nApplying Class Weights: {class_weight_dict}")
 
     history = model.fit(
         train_generator,
         epochs=EPOCHS,
         validation_data=val_generator,
-        callbacks=callbacks
+        callbacks=callbacks,
+        class_weight=class_weight_dict
     )
 
     return history
