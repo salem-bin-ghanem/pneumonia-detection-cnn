@@ -164,7 +164,23 @@ def train_model(model, train_generator, val_generator):
     Output:
         history: Training history object containing loss and accuracy values.
     """
+    #verify that the dataset is imbalanced
+    print(train_generator.class_indices)
+    print(np.bincount(train_generator.classes))
 
+    # Compute class weights to compensate for class imbalance
+    # in the training dataset.
+    class_weights_values = compute_class_weight(
+        class_weight="balanced",
+        classes=np.unique(train_generator.classes),
+        y=train_generator.classes
+    )
+
+    class_weights = dict(enumerate(class_weights_values))
+
+    print("\nClass weights used for training:")
+    print(class_weights)
+    
     callbacks = [
         EarlyStopping(
             monitor="val_loss",
@@ -183,7 +199,8 @@ def train_model(model, train_generator, val_generator):
         train_generator,
         epochs=EPOCHS,
         validation_data=val_generator,
-        callbacks=callbacks
+        callbacks=callbacks,
+        class_weight=class_weights 
     )
 
     return history
