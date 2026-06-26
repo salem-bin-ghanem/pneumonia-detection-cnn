@@ -22,7 +22,13 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, BatchNormalization
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-from sklearn.metrics import confusion_matrix, classification_report, ConfusionMatrixDisplay
+from sklearn.metrics import (
+    confusion_matrix,
+    classification_report,
+    ConfusionMatrixDisplay,
+    roc_curve,
+    roc_auc_score
+)
 
 
 # Configuration
@@ -262,9 +268,27 @@ def evaluate_model(model, test_generator):
     print(f"Test Accuracy: {test_accuracy:.4f}")
 
     predictions = model.predict(test_generator)
+    true_classes = test_generator.classes
     predicted_classes = (predictions > 0.5).astype("int32").flatten()
 
-    true_classes = test_generator.classes
+    # Compute ROC curve and AUC score
+    fpr, tpr, _ = roc_curve(true_classes, predictions)
+    roc_auc = roc_auc_score(true_classes, predictions)
+    
+    print(f"\nROC AUC Score: {roc_auc:.4f}")
+    
+    # Plot ROC curve
+    plt.figure(figsize=(8, 6))
+    plt.plot(fpr, tpr, label=f"AUC = {roc_auc:.4f}")
+    plt.plot([0, 1], [0, 1], linestyle="--", color="gray", label="Random Classifier")
+    plt.xlabel("False Positive Rate")
+    plt.ylabel("True Positive Rate")
+    plt.title("Receiver Operating Characteristic (ROC) Curve")
+    plt.legend(loc="lower right")
+    plt.grid(True)
+    plt.savefig(os.path.join(RESULTS_DIR, "roc_curve.png"))
+    plt.close()
+
     class_labels = list(test_generator.class_indices.keys())
 
     print("\nClassification Report:")
