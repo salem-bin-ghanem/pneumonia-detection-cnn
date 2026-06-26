@@ -9,7 +9,7 @@ Project steps:
 2. Preprocess images by resizing and normalizing pixel values.
 3. Build a CNN model using TensorFlow/Keras.
 4. Train the model and monitor validation performance.
-5. Evaluate the trained model using accuracy, classification report, and confusion matrix.
+5. Evaluate the trained model using accuracy, classification report, confusion matrix, ROC curve and AUC score.
 6. Save plots and the trained model inside the results folder.
 """
 
@@ -22,14 +22,8 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, BatchNormalization
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-from sklearn.metrics import (
-    confusion_matrix,
-    classification_report,
-    ConfusionMatrixDisplay,
-    roc_curve,
-    roc_auc_score
-)
-
+from sklearn.metrics import confusion_matrix, classification_report, ConfusionMatrixDisplay, roc_curve, roc_auc_score
+from sklearn.utils.class_weight import compute_class_weight
 
 # Configuration
 
@@ -161,6 +155,7 @@ def train_model(model, train_generator, val_generator):
 
     Early stopping is used to stop training when validation loss stops improving.
     ModelCheckpoint saves the best model during training.
+    Class weights are implemented to account for the considerable class imbalance in the dataset.
 
     Input:
         model: Compiled Keras CNN model.
@@ -170,12 +165,11 @@ def train_model(model, train_generator, val_generator):
     Output:
         history: Training history object containing loss and accuracy values.
     """
-    #verify that the dataset is imbalanced
+    # Verify that the dataset is imbalanced
     print(train_generator.class_indices)
     print(np.bincount(train_generator.classes))
 
-    # Compute class weights to compensate for class imbalance
-    # in the training dataset.
+    # Compute class weights to compensate for class imbalance in the dataset
     class_weights_values = compute_class_weight(
         class_weight="balanced",
         classes=np.unique(train_generator.classes),
@@ -252,8 +246,8 @@ def evaluate_model(model, test_generator):
     """
     Evaluate the trained CNN model on the test dataset.
 
-    This function prints the test accuracy, classification report, and saves
-    a confusion matrix plot.
+    This function prints the test loss/accuracy, classification report, and saves
+    a confusion matrix plot. It also saves the ROC curve and prints the AUC score.
 
     Input:
         model: Trained Keras CNN model.
@@ -271,6 +265,23 @@ def evaluate_model(model, test_generator):
     true_classes = test_generator.classes
     predicted_classes = (predictions > 0.5).astype("int32").flatten()
 
+    class_labels = list(test_generator.class_indices.keys())
+
+    print("\nClassification Report:")
+    print(classification_report(true_classes, predicted_classes, target_names=class_labels))
+
+    cm = confusion_matrix(true_classes, predicted_classes)
+
+    disp = ConfusionMatrixDisplay(
+        confusion_matrix=cm,
+        display_labels=class_labels
+    )
+
+    disp.plot(cmap="Blues")
+    plt.title("Confusion Matrix")
+    plt.savefig(os.path.join(RESULTS_DIR, "confusion_matrix.png"))
+    plt.close()
+
     # Compute ROC curve and AUC score
     fpr, tpr, _ = roc_curve(true_classes, predictions)
     roc_auc = roc_auc_score(true_classes, predictions)
@@ -287,23 +298,6 @@ def evaluate_model(model, test_generator):
     plt.legend(loc="lower right")
     plt.grid(True)
     plt.savefig(os.path.join(RESULTS_DIR, "roc_curve.png"))
-    plt.close()
-
-    class_labels = list(test_generator.class_indices.keys())
-
-    print("\nClassification Report:")
-    print(classification_report(true_classes, predicted_classes, target_names=class_labels))
-
-    cm = confusion_matrix(true_classes, predicted_classes)
-
-    disp = ConfusionMatrixDisplay(
-        confusion_matrix=cm,
-        display_labels=class_labels
-    )
-
-    disp.plot(cmap="Blues")
-    plt.title("Confusion Matrix")
-    plt.savefig(os.path.join(RESULTS_DIR, "confusion_matrix.png"))
     plt.close()
 
 
