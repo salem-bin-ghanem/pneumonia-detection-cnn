@@ -21,15 +21,15 @@ import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, BatchNormalization
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from sklearn.metrics import confusion_matrix, classification_report, ConfusionMatrixDisplay, roc_curve, roc_auc_score
 from sklearn.utils.class_weight import compute_class_weight
 
 # Configuration
 
-IMAGE_SIZE = (150, 150)
+IMAGE_SIZE = (160, 160)
 BATCH_SIZE = 32
-EPOCHS = 15
+EPOCHS = 20
 
 TRAIN_DIR = "data/train"
 VAL_DIR = "data/val"
@@ -71,7 +71,7 @@ def load_data():
     train_datagen = ImageDataGenerator(
         rescale=1.0 / 255,
         rotation_range=15,
-        zoom_range=0.1,
+        zoom_range=0.15,
         width_shift_range=0.1,
         height_shift_range=0.1,
         horizontal_flip=True
@@ -120,15 +120,15 @@ def build_cnn_model():
     """
 
     model = Sequential([
-        Conv2D(32, (3, 3), activation="relu", input_shape=(150, 150, 3)),
+        Conv2D(32, (3, 3), padding="same", activation="relu", input_shape=(IMAGE_SIZE[0], IMAGE_SIZE[1], 3)),
         BatchNormalization(),
         MaxPooling2D(pool_size=(2, 2)),
 
-        Conv2D(64, (3, 3), activation="relu"),
+        Conv2D(64, (3, 3), padding="same", activation="relu"),
         BatchNormalization(),
         MaxPooling2D(pool_size=(2, 2)),
 
-        Conv2D(128, (3, 3), activation="relu"),
+        Conv2D(128, (3, 3), padding="same", activation="relu"),
         BatchNormalization(),
         MaxPooling2D(pool_size=(2, 2)),
 
@@ -140,8 +140,11 @@ def build_cnn_model():
         Dense(1, activation="sigmoid")
     ])
 
+    # Lower initial learning rate for Adam optimizer to improve convergence
+    opt = tf.keras.optimizers.Adam(learning_rate=1e-4)
+
     model.compile(
-        optimizer="adam",
+        optimizer=opt,
         loss="binary_crossentropy",
         metrics=["accuracy"]
     )
@@ -191,6 +194,13 @@ def train_model(model, train_generator, val_generator):
             MODEL_PATH,
             monitor="val_accuracy",
             save_best_only=True,
+            verbose=1
+        ),
+        ReduceLROnPlateau(
+            monitor="val_loss",
+            factor=0.5,
+            patience=3,
+            min_lr=1e-6,
             verbose=1
         )
     ]
