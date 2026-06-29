@@ -230,7 +230,7 @@ results/
 │── run4/
 │── run5/
 │
-│── summary_metrics.csv
+│── runs_summary.csv
 ```
 
 Each run folder contains the plots, classification report, confusion matrix, ROC curve, and saved model for that run.
