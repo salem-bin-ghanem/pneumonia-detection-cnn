@@ -235,7 +235,7 @@ results/
 
 Each run folder contains the plots, classification report, confusion matrix, ROC curve, and saved model for that run.
 
-The `summary_metrics.csv` file contains the performance metrics for all 5 runs, including the mean and standard deviation.
+The ` runs_summary.csv` file contains the performance metrics for all 5 runs, including the mean and standard deviation.
 
 ## Tools and Technologies
 
@@ -266,12 +266,12 @@ pneumonia-detection-cnn/
 │   │── test/
 │
 │── results/
-│   │── run_1/
-│   │── run_2/
-│   │── run_3/
-│   │── run_4/
-│   │── run_5/
-│   │── summary_metrics.csv
+│   │── run1/
+│   │── run2/
+│   │── run3/
+│   │── run4/
+│   │── run5/
+│   │──  runs_summary.csv
 ```
 
 ## Installation
