@@ -221,7 +221,7 @@ results/
 │   │── accuracy_plot.png
 │   │── loss_plot.png
 │   │── confusion_matrix.png
-│   │── classification_report.txt
+│   │── classification_report.png
 │   │── roc_curve.png
 │   │── pneumonia_cnn_model.keras
 │
