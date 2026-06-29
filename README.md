@@ -217,7 +217,7 @@ The `results/` folder contains the outputs of the final model runs.
 
 ```text
 results/
-│── run_1/
+│── run1/
 │   │── accuracy_plot.png
 │   │── loss_plot.png
 │   │── confusion_matrix.png
@@ -225,10 +225,10 @@ results/
 │   │── roc_curve.png
 │   │── pneumonia_cnn_model.keras
 │
-│── run_2/
-│── run_3/
-│── run_4/
-│── run_5/
+│── run2/
+│── run3/
+│── run4/
+│── run5/
 │
 │── summary_metrics.csv
 ```
