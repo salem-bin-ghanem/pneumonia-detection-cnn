@@ -12,8 +12,14 @@ Instructions:
 2. Ensure it looks like this:
    kaggle_original/
        train/
+            NORMAL/
+            PNEUMONIA/
        val/
+            NORMAL/
+            PNEUMONIA/
        test/
+            NORMAL/
+            PNEUMONIA/
 3. Run this script. It will copy the images into a new, properly split "data/" folder.
 """
 
@@ -29,14 +35,21 @@ DEST_DIR = "data"              # The folder where the split data will go
 TRAIN_SPLIT = 0.70
 VAL_SPLIT = 0.15
 # Test split is the remaining 0.15
-random.seed(42)
+random.seed(42) # For reproducibility of the random shuffling
 
 def create_directory_structure():
     """
     Creates the empty train, val, and test folders with NORMAL/PNEUMONIA subfolders.
     If the subfolders already exist, deletes them to start fresh, but keeps 
     other files in DEST_DIR (like data/README.md) intact.
+
+    Input:
+        None
+    
+    Output:
+        None
     """
+
     # Create the main destination folder if it doesn't exist yet
     os.makedirs(DEST_DIR, exist_ok=True)
         
@@ -53,7 +66,16 @@ def create_directory_structure():
             os.makedirs(os.path.join(split_path, category), exist_ok=True)
             
 def gather_all_images(category):
-    """Finds all images for a specific category across the original train/val/test folders."""
+    """
+    Finds all images for a specific category across the original train/val/test folders.
+
+    Input:
+        category (str): The category of images to gather ('NORMAL' or 'PNEUMONIA')
+
+    Output:
+        all_images (list): A list of file paths to all images in the specified category.
+    """
+
     all_images = []
     for split in ['train', 'val', 'test']:
         folder_path = os.path.join(SOURCE_DIR, split, category)
@@ -64,7 +86,18 @@ def gather_all_images(category):
     return all_images
 
 def copy_images_to_dest(image_paths, split_name, category):
-    """Copies a list of images to their new destination folder."""
+    """
+    Copies a list of images to their new destination folder.
+
+    Input:
+        image_paths (list): List of file paths to copy.
+        split_name (str): The name of the split folder ('train', 'val', or 'test').
+        category (str): The category of images to copy ('NORMAL' or 'PNEUMONIA').
+
+    Output:
+        None
+    """
+
     dest_folder = os.path.join(DEST_DIR, split_name, category)
     for src_path in image_paths:
         filename = os.path.basename(src_path)
@@ -72,7 +105,16 @@ def copy_images_to_dest(image_paths, split_name, category):
         shutil.copy2(src_path, dest_path)
 
 def split_and_copy_data(category):
-    """Shuffles the data and splits it into 70/15/15."""
+    """
+    Shuffles the data and splits it into 70/15/15.
+    
+    Input:
+        category (str): The category of images to process ('NORMAL' or 'PNEUMONIA').
+
+    Output:
+        None
+    """
+
     print(f"\nProcessing {category} images...")
     
     # 1. Gather all images and shuffle them randomly
@@ -99,6 +141,16 @@ def split_and_copy_data(category):
     copy_images_to_dest(test_images, 'test', category)
 
 def main():
+    """
+    Main function that runs the full dataset splitting process.
+
+    Input:
+        None
+    
+    Output:
+        None
+    """
+    
     if not os.path.exists(SOURCE_DIR):
         print(f"Error: Could not find the folder '{SOURCE_DIR}'.")
         print("Please extract the downloaded Kaggle dataset into a folder named 'kaggle_original'.")

@@ -49,6 +49,7 @@ def create_results_folder():
     Output:
         None
     """
+    
     os.makedirs(RESULTS_DIR, exist_ok=True)
 
 
@@ -159,6 +160,7 @@ def train_model(model, train_generator, val_generator):
     Early stopping is used to stop training when validation loss stops improving.
     ModelCheckpoint saves the best model during training.
     Class weights are implemented to account for the considerable class imbalance in the dataset.
+    ReduceLROnPlateau is used to reduce the learning rate when the validation loss stops improving.
 
     Input:
         model: Compiled Keras CNN model.
@@ -168,6 +170,7 @@ def train_model(model, train_generator, val_generator):
     Output:
         history: Training history object containing loss and accuracy values.
     """
+
     # Verify that the dataset is imbalanced
     print(train_generator.class_indices)
     print(np.bincount(train_generator.classes))
