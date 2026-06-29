@@ -1,5 +1,30 @@
 # Pneumonia Detection using Convolutional Neural Networks (CNN)
 
+## Table of Contents
+
+- [Project Description](#project-description)
+- [Objectives](#objectives)
+- [Dataset](#dataset)
+- [Dataset Structure](#dataset-structure)
+- [Methodology](#methodology)
+- [Data Preprocessing and Augmentation](#data-preprocessing-and-augmentation)
+- [Overfitting Prevention](#overfitting-prevention)
+- [Class Imbalance](#class-imbalance)
+- [Evaluation Metrics](#evaluation-metrics)
+- [Model Selection](#model-selection)
+- [Final Model](#final-model)
+- [Why CNN?](#why-cnn)
+- [Final Results Across 5 Runs](#final-results-across-5-runs)
+- [Result Interpretation](#result-interpretation)
+- [Results Folder](#results-folder)
+- [Tools and Technologies](#tools-and-technologies)
+- [Project Structure](#project-structure)
+- [Installation](#installation)
+- [How to Run the Project](#how-to-run-the-project)
+- [Limitations](#limitations)
+- [Future Improvements](#future-improvements)
+- [Team Members](#team-members)
+
 ## Project Description
 
 This project aims to build a machine learning model that can detect pneumonia from chest X-ray images. Pneumonia is a serious lung infection, and early detection can support faster medical diagnosis and treatment.
@@ -26,23 +51,45 @@ The main objectives of this project are:
 
 ## Dataset
 
-The project uses a chest X-ray image dataset containing two classes:
+### Original Source
 
-* NORMAL
-* PNEUMONIA
+The source of data for this project is the **Chest X-Ray Images (Pneumonia)** dataset, publicly available on Kaggle:
 
-The dataset is divided into:
+https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia
 
-* Training set
-* Validation set
-* Test set
+This dataset was originally introduced in:
 
-The test set contains 880 images:
+Kermany, D. S., et al. (2018). *Identifying Medical Diagnoses and Treatable Diseases by Image-Based Deep Learning*. Cell.
 
-* 238 NORMAL images
-* 642 PNEUMONIA images
+### Project Dataset
+
+The dataset contains a total of 5856 frontal chest X-ray images of children between one to five years of age. The images fall into two classes:
+
+* NORMAL: 1583 images (27%)
+* PNEUMONIA: 4273 images (73%)
+
+The dataset is distributed using a randomized 70/15/15 split, preserving the NORMAL to PNEUMONIA ratio in
+all subsets:
+
+* Training set: 4099 images (70%)
+    - NORMAL: 1108
+    - PNEUMONIA: 2991
+* Validation set: 877 images (15%)
+    - NORMAL: 237
+    - PNEUMONIA: 640
+* Test set: 880 images (15%)
+    - NORMAL: 238
+    - PNEUMONIA: 642
 
 The dataset is imbalanced because the number of PNEUMONIA images is higher than the number of NORMAL images. To reduce bias toward the majority class, class weights are used during training.
+
+### Clinical Illustrations
+
+Below are representative sample images from the dataset showing the visual difference between a normal lung and one affected by pneumonia (characterized by hazy, diffuse white consolidations):
+
+| Normal Lung (Clear Cavity) | Pneumonia (Diffuse Opacities) |
+| :---: | :---: |
+| <img src="samples/normal_sample.jpeg" width="300" alt="Normal Chest X-Ray"> | <img src="samples/pneumonia_sample.jpeg" width="300" alt="Pneumonia Chest X-Ray"> |
 
 ## Dataset Structure
 
@@ -80,39 +127,6 @@ The project follows these main steps:
 9. Evaluate the trained model on the test dataset.
 10. Save the trained model and visual evaluation results.
 
-## Final Model
-
-The final model is a Convolutional Neural Network for binary image classification.
-
-The final model uses:
-
-* Image size: 160 x 160
-* Batch size: 32
-* Maximum epochs: 20
-* Binary classification with sigmoid output
-* Adam optimizer with learning rate 0.0001
-* Data augmentation
-* Class weights
-* Early stopping
-* Model checkpoint
-* ReduceLROnPlateau callback
-
-The model architecture contains:
-
-* Three convolutional blocks with 32, 64, and 128 filters
-* `padding="same"` in the convolutional layers
-* Batch normalization after each convolutional layer
-* Max pooling layers for dimensionality reduction
-* A dense layer with 128 neurons
-* Dropout with rate 0.5 to reduce overfitting
-* A sigmoid output layer for binary prediction
-
-## Why CNN?
-
-A Convolutional Neural Network is suitable for this project because the input data are images. CNNs can automatically learn spatial features from images, such as edges, textures, and lung opacity patterns.
-
-Compared to a fully connected neural network, CNNs are more efficient for image classification because they preserve spatial information and use fewer parameters.
-
 ## Data Preprocessing and Augmentation
 
 The images are resized to 160 x 160 pixels so that all inputs have the same shape.
@@ -149,6 +163,30 @@ The dataset is imbalanced because PNEUMONIA images are more frequent than NORMAL
 
 If the model is trained without considering this imbalance, it may become biased toward the majority class. To reduce this problem, class weights are used during training. This gives more importance to the minority class and helps the model learn both classes more fairly.
 
+## Evaluation Metrics
+
+The model is evaluated using:
+
+* Accuracy
+* Precision
+* Recall
+* F1-score
+* Confusion matrix
+* ROC curve
+* AUC score
+
+Accuracy shows the overall percentage of correctly classified images.
+
+Precision shows how many predicted positive cases were actually correct.
+
+Recall shows how many real positive cases were detected by the model.
+
+F1-score balances precision and recall.
+
+The confusion matrix shows correct and incorrect predictions for each class.
+
+The ROC curve and AUC score show how well the model separates the two classes at different thresholds.
+
 ## Model Selection
 
 Several model configurations were tested during the project.
@@ -156,6 +194,39 @@ Several model configurations were tested during the project.
 One previous model achieved a high single-run accuracy of 96%. However, repeated experiments showed that this model was less stable across multiple runs.
 
 The final model was selected based on average performance and stability across 5 repeated runs, not only based on the highest single accuracy. This makes the final result more reliable and reproducible.
+
+## Final Model
+
+The final model is a Convolutional Neural Network for binary image classification.
+
+The final model uses:
+
+* Image size: 160 x 160
+* Batch size: 32
+* Maximum epochs: 20
+* Binary classification with sigmoid output
+* Adam optimizer with learning rate 0.0001
+* Data augmentation
+* Class weights
+* Early stopping
+* Model checkpoint
+* ReduceLROnPlateau callback
+
+The model architecture contains:
+
+* Three convolutional blocks with 32, 64, and 128 filters utilizing ReLU activation
+* `padding="same"` in the convolutional layers
+* Batch normalization after each convolutional layer
+* Max pooling layers for dimensionality reduction
+* A dense layer with 128 neurons utilizing ReLU activation
+* Dropout with rate 0.5 to reduce overfitting
+* A sigmoid output layer for binary prediction
+
+## Why CNN?
+
+A Convolutional Neural Network is suitable for this project because the input data are images. CNNs can automatically learn spatial features from images, such as edges, textures, and lung opacity patterns.
+
+Compared to a fully connected neural network, CNNs are more efficient for image classification because they preserve spatial information and use fewer parameters.
 
 ## Final Results Across 5 Runs
 
@@ -187,30 +258,6 @@ The PNEUMONIA recall is especially important because false negatives are more cr
 
 The results show that the final model performs strongly and consistently, especially for detecting pneumonia cases. The low standard deviation of accuracy and AUC also shows that the model is relatively stable across repeated runs.
 
-## Evaluation Metrics
-
-The model is evaluated using:
-
-* Accuracy
-* Precision
-* Recall
-* F1-score
-* Confusion matrix
-* ROC curve
-* AUC score
-
-Accuracy shows the overall percentage of correctly classified images.
-
-Precision shows how many predicted positive cases were actually correct.
-
-Recall shows how many real positive cases were detected by the model.
-
-F1-score balances precision and recall.
-
-The confusion matrix shows correct and incorrect predictions for each class.
-
-The ROC curve and AUC score show how well the model separates the two classes at different thresholds.
-
 ## Results Folder
 
 The `results/` folder contains the outputs of the final model runs.
@@ -223,7 +270,6 @@ results/
 │   │── confusion_matrix.png
 │   │── classification_report.png
 │   │── roc_curve.png
-│   │── pneumonia_cnn_model.keras
 │
 │── run2/
 │── run3/
@@ -233,7 +279,7 @@ results/
 │── runs_summary.csv
 ```
 
-Each run folder contains the plots, classification report, confusion matrix, ROC curve, and saved model for that run.
+Each run folder contains the plots, classification report, confusion matrix, and ROC curve for that run.
 
 The ` runs_summary.csv` file contains the performance metrics for all 5 runs, including the mean and standard deviation.
 
@@ -272,6 +318,8 @@ pneumonia-detection-cnn/
 │   │── run4/
 │   │── run5/
 │   │──  runs_summary.csv
+|
+|── samples/
 ```
 
 ## Installation
@@ -293,11 +341,13 @@ pip install -r requirements.txt
 
 Make sure the dataset is placed inside the `data/` folder using the correct structure.
 
-If the dataset is not already split, run:
+If the original dataset is not properly split, run:
 
 ```bash
 python split_dataset.py
 ```
+
+(Note: Before running 'split_dataset.py', check its detailed guide for correct configuration of the raw data.)
 
 To train and evaluate the CNN model, run:
 
