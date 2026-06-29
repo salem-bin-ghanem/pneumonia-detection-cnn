@@ -68,6 +68,16 @@ The test set contains 880 images:
 
 The dataset is imbalanced because the number of PNEUMONIA images is higher than the number of NORMAL images. To reduce bias toward the majority class, class weights are used during training.
 
+### Dataset Source
+
+The dataset used in this project is the **Chest X-Ray Images (Pneumonia)** dataset, publicly available on Kaggle:
+
+https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia
+
+The dataset was originally introduced in:
+
+Kermany, D. S., et al. (2018). *Identifying Medical Diagnoses and Treatable Diseases by Image-Based Deep Learning*. Cell.
+
 ## Dataset Structure
 
 The dataset should be placed inside the `data/` folder using the following structure:
