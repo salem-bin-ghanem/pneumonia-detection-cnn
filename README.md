@@ -1,4 +1,28 @@
 # Pneumonia Detection using Convolutional Neural Networks (CNN)
+## Table of Contents
+
+- [Project Description](#project-description)
+- [Objectives](#objectives)
+- [Dataset](#dataset)
+- [Dataset Structure](#dataset-structure)
+- [Methodology](#methodology)
+- [Final Model](#final-model)
+- [Why CNN?](#why-cnn)
+- [Data Preprocessing and Augmentation](#data-preprocessing-and-augmentation)
+- [Overfitting Prevention](#overfitting-prevention)
+- [Class Imbalance](#class-imbalance)
+- [Evaluation Metrics](#evaluation-metrics)
+- [Model Selection](#model-selection)
+- [Final Results Across 5 Runs](#final-results-across-5-runs)
+- [Result Interpretation](#result-interpretation)
+- [Results Folder](#results-folder)
+- [Tools and Technologies](#tools-and-technologies)
+- [Project Structure](#project-structure)
+- [Installation](#installation)
+- [How to Run the Project](#how-to-run-the-project)
+- [Limitations](#limitations)
+- [Future Improvements](#future-improvements)
+- [Team Members](#team-members)
 
 ## Project Description
 
